@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <script>
+        function generateResult() {
+            var result = "{\n\tquestion=\""+document.getElementById("quiz_content_ques").value+"\""
+            + "\n\ttype="
+
+            if (document.getElementById("quiz_type").value == "1") {
+                result += "\"select\""
+                + "\n\tanswer=\""+document.getElementById("quiz_content_ans").value+"\"";
+
+                var ex1 = document.getElementById("quiz_content_ex1").value;
+                var ex2 = document.getElementById("quiz_content_ex2").value;
+                var ex3 = document.getElementById("quiz_content_ex3").value;
+
+                if(ex1 != "") result += "\n\tex1=\""+ex1+"\"";
+                if(ex2 != "") result += "\n\tex2=\""+ex2+"\"";
+                if(ex3 != "") result += "\n\tex3=\""+ex3+"\"";
+
+            } else if (document.getElementById("quiz_type").value == "2") {
+                result += "\"ox\""
+                + "\n\tanswer="+(document.getElementById("quiz_content_ox_ans").checked ? 
+                "true" : "false");
+
+            } else if (document.getElementById("quiz_type").value == "3") {
+                result += "\"type\""
+                + "\n\tanswer=\""+document.getElementById("quiz_content_ans").value+"\"";
+
+                var goodans = "";
+                Array.from(document.getElementById("quiz_content_typein_list").childNodes).forEach(div => {
+                    if(div.innerHTML != undefined)
+                    {
+                        goodans += "\"" + div.innerHTML + "\",";
+                    }
+                });
+
+                if(goodans != "") {
+                    result += "\n\tanswer_good=[" + goodans + "]";
+                }
+            }
+
+            result += "\n},";
+            document.getElementById("quiz_result_input").value = result;
+        }
+
+        function changeSelect() {
+            document.getElementById("quiz_content_ans").style.display = "block";
+            document.getElementById("quiz_content_4select").style.display = "none";
+            document.getElementById("quiz_content_ox").style.display = "none";
+            document.getElementById("quiz_content_typein").style.display = "none";
+
+            if (document.getElementById("quiz_type").value == "1") {
+                document.getElementById("quiz_content_4select").style.display = "block";
+            } else if (document.getElementById("quiz_type").value == "2") {
+                document.getElementById("quiz_content_ox").style.display = "block";
+                document.getElementById("quiz_content_ans").style.display = "none";
+            } else if (document.getElementById("quiz_type").value == "3") {
+                document.getElementById("quiz_content_typein").style.display = "block";
+            }
+
+            generateResult()
+        }
+
+        function copyResult() {
+            window.navigator.clipboard.writeText(document.getElementById("quiz_result_input").value).then(() => {
+                alert("복사되었습니다.");
+            });
+        }
+
+        function type_AddItem() {
+            if(document.getElementById("quiz_content_goodans").value == "") return
+
+            var newItem = document.createElement("li");
+            newItem.innerHTML = document.getElementById("quiz_content_goodans").value;
+            newItem.onclick = type_RemoveItem;
+            document.getElementById("quiz_content_typein_list").appendChild(newItem);
+
+            generateResult()
+        }
+        function type_RemoveItem() {
+            document.getElementById("quiz_content_typein_list").removeChild(this);
+
+            generateResult()
+        }
+    </script>
+ <title>퀴즈맵 퀴즈 만들기 BETA</title>
+</head>
+<body>
+    <div id="quiz_title" class="title">
+        퀴즈맵 퀴즈 만들기 BETA
+    </div>
+    <select id="quiz_type" onchange="changeSelect()" style="margin: auto;">
+        <option value=1 selected>4지선다형</option>
+        <option value=2>OX</option>
+        <option value=3>서술형</option>
+    </select>
+ <div id="quiz_content" oninput="generateResult()">
+    <p>
+        <input type="text" id="quiz_content_ques" class="typein" placeholder="질문을 입력하세요"/></br>
+        <input type="text" id="quiz_content_ans" class="typein" placeholder="정답을 입력하세요"/>
+    </p>
+    <p id="quiz_content_4select">
+        <input type="text" id="quiz_content_ex1" class="typein" placeholder="첫번째 틀린 답을 입력하세요"/></br>
+        <input type="text" id="quiz_content_ex2" class="typein" placeholder="두번째 틀린 답을 입력하세요"/></br>
+        <input type="text" id="quiz_content_ex3" class="typein" placeholder="세번째 틀린 답을 입력하세요"/>
+    </p>
+    <p id="quiz_content_ox" style="display: none">
+        O = 체크 / X = 체크 해제<br>
+        <input type="checkbox" id="quiz_content_ox_ans"/>
+    </p>
+    <div id="quiz_content_typein" style="display: none">
+        <div>
+            <input type="text" id="quiz_content_goodans" class="typein" placeholder="인정되는 정답을 추가하세요"/>
+            <button onclick='type_AddItem()' style="float: right;">+</button>
+        </div>
+        (추가된 답을 클릭해 답을 제거할 수 있습니다)<br>
+        <div id="quiz_content_typein_list">
+            
+        </div>
+    </div>
+ </div>
+ <div id="quiz_result">
+    <p></p><button onclick='copyResult()' style="float: right;">복사</button></p>
+    <p><textarea id="quiz_result_input" readonly></textarea></p>
+ </div>
+</body>
+</html>
