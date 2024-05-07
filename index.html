@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="main.css">
     <script>
         function generateResult() {
-            var result = "{\n\tquestion=\""+document.getElementById("quiz_content_ques").value+"\""
+            var result = "{\n\tquestion=\""+document.getElementById("quiz_content_ques").value.replace(/\"/g, "\\\"")+"\""
             + "\n\tdiff="+document.getElementById("quiz_content_diff").value
             + "\n\ttype="
 
